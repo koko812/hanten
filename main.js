@@ -55,7 +55,14 @@ const flip = async (x, y) => {
     // ごめんなさい今は全く興味湧かないんだけど，また興味が出たら調べといて
     // そして git を作る間もなく完成してしまうというね，まあいいことではある
 
+    // この辺りの rotate やらの書き方はちょっとずつ覚えつつある
     panel.style.transform = 'perspective(150px) rotateY(90deg)'
+    // ここがやっぱり慣れない
+    // Promise で r つまり setTimeout が終わるまで await するみたいな感じのはず
+    // これを書いておくことによって，時系列に処理が走るようになる
+    // で，思ったのは，async をつけて関数定義すると，途中で止まれる関数になるというのはガチで
+    // なんでそうなるんだろうなという感じはした
+    // async で音声対話システムを作りたい所存
     await new Promise(r => setTimeout(r, 100))
     panel.style.backgroundColor = (color) ? "#00f" : "#f00"
     panel.style.transform = 'perspective(150px) rotateY(-90deg)'
@@ -64,6 +71,15 @@ const flip = async (x, y) => {
     panel.style.backgroundColor = (color) ? "#00f" : "#f00"
     panel.style.transform = 'perspective(150px) rotateY(0deg)'
     await new Promise(r => setTimeout(r, 100))
+    // そして ^ の一連の処理の意味がちょっと掴めてない
+    // まず 90deg 回して，その後，一瞬色を変えながら -90deg までまわすんだよね？
+    // で，その後 0deg に戻すということで
+    // 普通に　180deg 回せばいいんじゃないって思ったんだけど，それだと裏の裏が面倒になる気がするな今思うと
+    // まあじゃあなんとなく納得はしたけど，やっぱり微妙に引っかかる部分はある
+    // parentElement に append するのは -90deg までいく動きを見せたくないからだよな多分
+    // そういうことを言ってるんだと思う，で，transition を消すのがめんどいから，作り直してると
+    // （じゃあ元あったやつはどこに行ったのかって話になってくるんだが）
+    // それはテトリスのミノのフォーカスの移動の時に感じた謎と共通してる部分があるかもしれないな
 
     isAnimation = false
 }
@@ -79,5 +95,6 @@ const ondown = (x, y) => {
     flip(x, y + 1)
     flip(x, y - 1)
 
+    // このイキリ腐ったコードが大好き
     gameover = board.flat().every((v) => v.color === 1);
 }
